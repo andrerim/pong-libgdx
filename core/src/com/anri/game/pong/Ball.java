@@ -7,7 +7,7 @@ public class Ball {
 
     public Ball(int xVelocity, int yVelocity, int width, int height){
         this.xVelocity = xVelocity;
-        this.yVelocity = yVelocity;
+        this.yVelocity = 1;
         this.xPos = width / 2;
         this.yPos = height / 2;
         this.screenWidth = width;
@@ -19,7 +19,6 @@ public class Ball {
         if (this.yPos >= screenHeight || this.yPos <= 0) {
             yVelocity = -yVelocity;
         }
-
         this.xPos += xVelocity;
         this.yPos += yVelocity;
     }
@@ -40,20 +39,16 @@ public class Ball {
     public void resetPos(){
         xPos = screenWidth / 2;
         yPos = screenHeight / 2;
-        xVelocity = Pong.randomInt();
+
+        xVelocity = xVelocity > 0 ? xVelocity + 1 : xVelocity - 1;
         yVelocity = Pong.randomInt();
+        System.out.println(xVelocity);
     }
 
     public void reverse(){
+        if (yVelocity < 6 && yVelocity > -6){
+            yVelocity = yVelocity > 0 ? yVelocity + 1 : yVelocity - 1;
+        }
         xVelocity = -xVelocity;
     }
-
-    boolean collision(){
-        return true;
-    }
-
-    void draw(){
-
-    }
-
 }
