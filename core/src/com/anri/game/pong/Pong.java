@@ -18,6 +18,7 @@ public class Pong extends ApplicationAdapter {
     int playerLScore, playerRScore = 0;
     BitmapFont font;
     Paddle paddleLeft, paddleRight;
+    boolean infoMessage = true;
 
     @Override
     public void create() {
@@ -36,7 +37,9 @@ public class Pong extends ApplicationAdapter {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        if (playerRScore > 21 || playerLScore > 21) {
+
+
+        if (playerRScore >= 21 || playerLScore >= 21) {
             batch.begin();
             font.getData().setScale(4f);
             font.draw(batch, "WINNER!!! Click to play again", width / 2 - 200, height / 2);
@@ -50,6 +53,21 @@ public class Pong extends ApplicationAdapter {
                 playerRScore = 0;
             }
         } else {
+            if (infoMessage){
+                batch.begin();
+                font.getData().setScale(3f);
+                font.draw(batch, "Move the paddle using keyboard: Up and Down", width / 2 - 400, height / 2);
+                font.draw(batch, "Click to play", width / 2 - 50, height / 2 - 100);
+                batch.end();
+
+                if (Gdx.input.justTouched()) {
+                    infoMessage = false;
+                } else {
+                    return;
+                }
+
+            }
+
             this.paddleRight.update();
             this.paddleLeft.updateAi(ball.yVelocity, ball.yPos);
 
