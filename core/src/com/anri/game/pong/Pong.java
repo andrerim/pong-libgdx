@@ -12,23 +12,25 @@ import java.util.Random;
 
 public class Pong extends ApplicationAdapter {
     SpriteBatch batch;
-    int width, height;
     Ball ball;
     ShapeRenderer shapeRenderer;
     int playerLScore, playerRScore = 0;
     BitmapFont font;
     Paddle paddleLeft, paddleRight;
     boolean infoMessage = true;
+    public static int screenWidth, screenHeight;
+
 
     @Override
     public void create() {
         batch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
-        width = Gdx.graphics.getWidth();
-        height = Gdx.graphics.getHeight();
-        this.ball = new Ball(10, randomInt(), width, height);
-        this.paddleLeft = new Paddle(width, height, true);
-        this.paddleRight = new Paddle(width, height, false);
+        // screenWidth and screenHeight must be set before initializing ball and paddle
+        screenWidth = Gdx.graphics.getWidth();;
+        screenHeight = Gdx.graphics.getHeight();
+        this.ball = Ball.getInstance();
+        this.paddleLeft = new Paddle(screenWidth, screenHeight, true);
+        this.paddleRight = new Paddle(screenWidth, screenHeight, false);
         font = new BitmapFont();
     }
 
@@ -42,11 +44,11 @@ public class Pong extends ApplicationAdapter {
         if (playerRScore >= 21 || playerLScore >= 21) {
             batch.begin();
             font.getData().setScale(4f);
-            font.draw(batch, "WINNER!!! Click to play again", width / 2 - 200, height / 2);
+            font.draw(batch, "WINNER!!! Click to play again", screenWidth / 2 - 200, screenHeight / 2);
             batch.end();
 
             if (Gdx.input.justTouched()) {
-                this.ball = new Ball(10, randomInt(), width, height);
+                this.ball.reset();
                 paddleLeft.resetPosition();
                 paddleRight.resetPosition();
                 playerLScore = 0;
@@ -56,8 +58,8 @@ public class Pong extends ApplicationAdapter {
             if (infoMessage){
                 batch.begin();
                 font.getData().setScale(3f);
-                font.draw(batch, "Move the paddle using keyboard: Up and Down", width / 2 - 400, height / 2);
-                font.draw(batch, "Click to play", width / 2 - 50, height / 2 - 100);
+                font.draw(batch, "Move the paddle using keyboard: Up and Down", screenWidth / 2 - 400, screenHeight / 2);
+                font.draw(batch, "Click to play", screenWidth / 2 - 50, screenHeight / 2 - 100);
                 batch.end();
 
                 if (Gdx.input.justTouched()) {
@@ -92,8 +94,8 @@ public class Pong extends ApplicationAdapter {
 
             batch.begin();
             font.getData().setScale(4f);
-            font.draw(batch, "" + playerLScore, 40, height - 10);
-            font.draw(batch, "" + playerRScore, width - 60, height - 10);
+            font.draw(batch, "" + playerLScore, 40, screenHeight - 10);
+            font.draw(batch, "" + playerRScore, screenWidth - 60, screenHeight - 10);
 
             batch.end();
             paddleCollision();
