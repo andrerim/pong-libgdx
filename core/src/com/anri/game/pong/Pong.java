@@ -17,16 +17,22 @@ public class Pong extends ApplicationAdapter {
     int playerLScore, playerRScore = 0;
     BitmapFont font;
     Paddle paddleLeft, paddleRight;
-    boolean infoMessage = true;
     public static int screenWidth, screenHeight;
+    private GameState currentState = GameState.INFO;
 
+    private enum GameState {
+        INFO,
+        PLAY,
+        GAMEOVER
+    }
 
     @Override
     public void create() {
         batch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
         // screenWidth and screenHeight must be set before initializing ball and paddle
-        screenWidth = Gdx.graphics.getWidth();;
+        screenWidth = Gdx.graphics.getWidth();
+        ;
         screenHeight = Gdx.graphics.getHeight();
         this.ball = Ball.getInstance();
         this.paddleLeft = new Paddle(screenWidth, screenHeight, true);
@@ -34,53 +40,36 @@ public class Pong extends ApplicationAdapter {
         font = new BitmapFont();
     }
 
+
     @Override
     public void render() {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-
-
-        if (playerRScore >= 21 || playerLScore >= 21) {
+        update();
+        if (currentState == GameState.INFO) {
+            batch.begin();
+            font.getData().setScale(3f);
+            font.draw(batch, "Move the paddle using keyboard: Up and Down", screenWidth / 2 - 400, screenHeight / 2);
+            font.draw(batch, "Click to play", screenWidth / 2 - 50, screenHeight / 2 - 100);
+            batch.end();
+        } else if (currentState == GameState.GAMEOVER) {
             batch.begin();
             font.getData().setScale(4f);
             font.draw(batch, "WINNER!!! Click to play again", screenWidth / 2 - 200, screenHeight / 2);
             batch.end();
-
-            if (Gdx.input.justTouched()) {
-                this.ball.reset();
-                paddleLeft.resetPosition();
-                paddleRight.resetPosition();
-                playerLScore = 0;
-                playerRScore = 0;
-            }
-        } else {
-            if (infoMessage){
-                batch.begin();
-                font.getData().setScale(3f);
-                font.draw(batch, "Move the paddle using keyboard: Up and Down", screenWidth / 2 - 400, screenHeight / 2);
-                font.draw(batch, "Click to play", screenWidth / 2 - 50, screenHeight / 2 - 100);
-                batch.end();
-
-                if (Gdx.input.justTouched()) {
-                    infoMessage = false;
-                } else {
-                    return;
-                }
-
-            }
-
+        } else  if (currentState == GameState.PLAY) {
             this.paddleRight.update();
             this.paddleLeft.updateAi(ball.yVelocity, ball.yPos);
 
             ball.update();
             int scored = ball.pointScored();
             if (scored != 0) {
-                 if (scored > 0) {
-                     playerLScore++;
-                 } else if (scored < 0){
-                     playerRScore++;
-                 }
+                if (scored > 0) {
+                    playerLScore++;
+                } else if (scored < 0) {
+                    playerRScore++;
+                }
             }
 
             shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
@@ -99,6 +88,33 @@ public class Pong extends ApplicationAdapter {
 
             batch.end();
             paddleCollision();
+        }
+    }
+
+
+    void update() {
+        switch (currentState) {
+            case INFO:
+                if (Gdx.input.justTouched()) {
+                    currentState = GameState.PLAY;
+                }
+                break;
+            case PLAY:
+                if (playerRScore >= 21 || playerLScore >= 21) {
+                    currentState = GameState.GAMEOVER;
+                }
+                break;
+            case GAMEOVER:
+                if (Gdx.input.justTouched()) {
+                    currentState = GameState.PLAY;
+                    this.ball.reset();
+                    paddleLeft.resetPosition();
+                    paddleRight.resetPosition();
+                    playerLScore = 0;
+                    playerRScore = 0;
+                }
+                break;
+            default:
         }
     }
 
