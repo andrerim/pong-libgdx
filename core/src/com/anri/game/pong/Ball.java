@@ -42,8 +42,14 @@ public class Ball {
 
         xVelocity = xVelocity > 0 ? xVelocity + 1 : xVelocity - 1;
         yVelocity = Pong.randomInt();
+        if (Pong.randomInt() < 11){
+            yVelocity *= -1;
+        }
         System.out.println(xVelocity);
     }
+
+
+
 
     public void reverse(){
         if (yVelocity < 6 && yVelocity > -6){

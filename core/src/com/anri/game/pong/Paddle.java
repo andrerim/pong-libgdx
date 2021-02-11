@@ -4,10 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 
 public class Paddle {
-    public int xPos, yPos;
+    private int initialX;
+    private int initialY;
+    private int xPos, yPos;
     private int yVelocity = 20;
-    public int paddleWidth = 10;
-    public int paddleHeight = 200;
+    private int paddleWidth = 10;
+    private int paddleHeight = 200;
     private int screenWidth, screenHeight;
     private boolean isLeft;
 
@@ -19,6 +21,8 @@ public class Paddle {
             this.xPos = width - paddleWidth;
         }
         this.yPos = (height / 2) - (paddleHeight / 2);
+        this.initialX = this.xPos;
+        this.initialY = this.yPos;
         this.screenWidth = width;
         this.screenHeight = height;
         this.isLeft = left;
@@ -35,10 +39,13 @@ public class Paddle {
                     yPos -= yVelocity;
                 }
             }
-        } else {
-
-
         }
+    }
+
+    // reset paddle to initial position
+    void resetPosition() {
+       xPos = initialX;
+       yPos = initialY;
     }
 
     void updateAi(int ballVelocityY, int ballY) {
@@ -53,5 +60,40 @@ public class Paddle {
                 yPos -= yVelocity;
             }
         }
+    }
+    public int getInitialX() {
+        return initialX;
+    }
+
+    public int getInitialY() {
+        return initialY;
+    }
+
+    public int getxPos() {
+        return xPos;
+    }
+
+    public int getyPos() {
+        return yPos;
+    }
+
+    public int getyVelocity() {
+        return yVelocity;
+    }
+
+    public int getPaddleWidth() {
+        return paddleWidth;
+    }
+
+    public int getPaddleHeight() {
+        return paddleHeight;
+    }
+
+    public int getScreenWidth() {
+        return screenWidth;
+    }
+
+    public int getScreenHeight() {
+        return screenHeight;
     }
 }

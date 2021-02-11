@@ -47,8 +47,8 @@ public class Pong extends ApplicationAdapter {
 
             if (Gdx.input.justTouched()) {
                 this.ball = new Ball(10, randomInt(), width, height);
-                this.paddleLeft = new Paddle(width, height, true);
-                this.paddleRight = new Paddle(width, height, false);
+                paddleLeft.resetPosition();
+                paddleRight.resetPosition();
                 playerLScore = 0;
                 playerRScore = 0;
             }
@@ -86,8 +86,8 @@ public class Pong extends ApplicationAdapter {
             shapeRenderer.end();
 
             shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-            shapeRenderer.rect(paddleLeft.xPos, paddleLeft.yPos, paddleLeft.paddleWidth, paddleLeft.paddleHeight);
-            shapeRenderer.rect(paddleRight.xPos, paddleRight.yPos, paddleRight.paddleWidth, paddleRight.paddleHeight);
+            shapeRenderer.rect(paddleLeft.getxPos(), paddleLeft.getyPos(), paddleLeft.getPaddleWidth(), paddleLeft.getPaddleHeight());
+            shapeRenderer.rect(paddleRight.getxPos(), paddleRight.getyPos(), paddleRight.getPaddleWidth(), paddleRight.getPaddleHeight());
             shapeRenderer.end();
 
             batch.begin();
@@ -106,18 +106,23 @@ public class Pong extends ApplicationAdapter {
     }
 
     public void paddleCollision() {
+        int paddleRX = paddleRight.getxPos();
+        int paddleRY = paddleRight.getyPos();
+        int paddleLX = paddleLeft.getxPos();
+        int paddleLY = paddleLeft.getyPos();
+
         if (ball.xVelocity > 0) {
-            if (paddleRight.xPos < ball.xPos + 50 &&
-                    paddleRight.xPos + paddleRight.paddleWidth > ball.xPos - 50 &&
-                    paddleRight.yPos < ball.yPos + 50 &&
-                    paddleRight.yPos + paddleRight.paddleHeight > ball.yPos - 50) {
+            if (paddleRX < ball.xPos + 50 &&
+                    paddleRX + paddleRight.getPaddleWidth() > ball.xPos - 50 &&
+                    paddleRY < ball.yPos + 50 &&
+                    paddleRY + paddleRight.getPaddleHeight() > ball.yPos - 50) {
                 ball.reverse();
             }
         } else if (ball.xVelocity < 0) {
-            if (paddleLeft.xPos < ball.xPos + 50 &&
-                    paddleLeft.xPos + paddleLeft.paddleWidth > ball.xPos - 50 &&
-                    paddleLeft.yPos < ball.yPos + 50 &&
-                    paddleLeft.yPos + paddleLeft.paddleHeight > ball.yPos - 50) {
+            if (paddleLX < ball.xPos + 50 &&
+                    paddleLX + paddleLeft.getPaddleWidth() > ball.xPos - 50 &&
+                    paddleLY < ball.yPos + 50 &&
+                    paddleLY + paddleLeft.getPaddleHeight() > ball.yPos - 50) {
                 ball.reverse();
             }
         }
