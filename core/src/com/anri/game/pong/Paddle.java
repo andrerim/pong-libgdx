@@ -28,7 +28,7 @@ public class Paddle {
         this.isLeft = left;
     }
 
-    void update() {
+    public void update() {
         if (!this.isLeft) {
             if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
                 if (this.yPos + this.paddleHeight <= screenHeight) {
@@ -43,30 +43,22 @@ public class Paddle {
     }
 
     // reset paddle to initial position
-    void resetPosition() {
-       xPos = initialX;
-       yPos = initialY;
+    public void resetPosition() {
+        xPos = initialX;
+        yPos = initialY;
     }
 
-    void updateAi(int ballVelocityY, int ballY) {
+    public void updateAi(int ballVelocityY, int ballY) {
 
         if (ballVelocityY > 0 && ballY > this.yPos) {
             if (this.yPos + this.paddleHeight <= screenHeight) {
                 yPos += yVelocity;
             }
-        }
-        else if (ballVelocityY < 0 || ballY < this.yPos) {
+        } else if (ballVelocityY < 0 || ballY < this.yPos) {
             if (this.yPos >= 0 && ballVelocityY < 0) {
                 yPos -= yVelocity;
             }
         }
-    }
-    public int getInitialX() {
-        return initialX;
-    }
-
-    public int getInitialY() {
-        return initialY;
     }
 
     public int getxPos() {
@@ -77,10 +69,6 @@ public class Paddle {
         return yPos;
     }
 
-    public int getyVelocity() {
-        return yVelocity;
-    }
-
     public int getPaddleWidth() {
         return paddleWidth;
     }
@@ -89,11 +77,4 @@ public class Paddle {
         return paddleHeight;
     }
 
-    public int getScreenWidth() {
-        return screenWidth;
-    }
-
-    public int getScreenHeight() {
-        return screenHeight;
-    }
 }

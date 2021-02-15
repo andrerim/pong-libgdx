@@ -1,5 +1,9 @@
 package com.anri.game.pong;
 
+import com.anri.game.pong.states.GameOverState;
+import com.anri.game.pong.states.GameState;
+import com.anri.game.pong.states.InfoState;
+import com.anri.game.pong.states.PlayState;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
@@ -11,20 +15,18 @@ import java.util.Random;
 
 
 public class Pong extends ApplicationAdapter {
-    SpriteBatch batch;
-    Ball ball;
-    ShapeRenderer shapeRenderer;
-    int playerLScore, playerRScore = 0;
-    BitmapFont font;
-    Paddle paddleLeft, paddleRight;
+    public SpriteBatch batch;
+    public Ball ball;
+    public ShapeRenderer shapeRenderer;
+    public int playerLScore, playerRScore = 0;
+    public BitmapFont font;
+    public Paddle paddleLeft, paddleRight;
     public static int screenWidth, screenHeight;
-    private GameState currentState = GameState.INFO;
+    public final InfoState infoState = new InfoState();
+    public final PlayState playState = new PlayState();
+    public final GameOverState gameOverState = new GameOverState();
+    public GameState currentState = infoState;
 
-    private enum GameState {
-        INFO,
-        PLAY,
-        GAMEOVER
-    }
 
     @Override
     public void create() {
@@ -32,7 +34,6 @@ public class Pong extends ApplicationAdapter {
         shapeRenderer = new ShapeRenderer();
         // screenWidth and screenHeight must be set before initializing ball and paddle
         screenWidth = Gdx.graphics.getWidth();
-        ;
         screenHeight = Gdx.graphics.getHeight();
         this.ball = Ball.getInstance();
         this.paddleLeft = new Paddle(screenWidth, screenHeight, true);
@@ -45,77 +46,16 @@ public class Pong extends ApplicationAdapter {
     public void render() {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        update();
-        if (currentState == GameState.INFO) {
-            batch.begin();
-            font.getData().setScale(3f);
-            font.draw(batch, "Move the paddle using keyboard: Up and Down", screenWidth / 2 - 400, screenHeight / 2);
-            font.draw(batch, "Click to play", screenWidth / 2 - 50, screenHeight / 2 - 100);
-            batch.end();
-        } else if (currentState == GameState.GAMEOVER) {
-            batch.begin();
-            font.getData().setScale(4f);
-            font.draw(batch, "WINNER!!! Click to play again", screenWidth / 2 - 200, screenHeight / 2);
-            batch.end();
-        } else  if (currentState == GameState.PLAY) {
-            this.paddleRight.update();
-            this.paddleLeft.updateAi(ball.yVelocity, ball.yPos);
-
-            ball.update();
-            int scored = ball.pointScored();
-            if (scored != 0) {
-                if (scored > 0) {
-                    playerLScore++;
-                } else if (scored < 0) {
-                    playerRScore++;
-                }
-            }
-
-            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-            shapeRenderer.circle(ball.xPos, ball.yPos, 50);
-            shapeRenderer.end();
-
-            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-            shapeRenderer.rect(paddleLeft.getxPos(), paddleLeft.getyPos(), paddleLeft.getPaddleWidth(), paddleLeft.getPaddleHeight());
-            shapeRenderer.rect(paddleRight.getxPos(), paddleRight.getyPos(), paddleRight.getPaddleWidth(), paddleRight.getPaddleHeight());
-            shapeRenderer.end();
-
-            batch.begin();
-            font.getData().setScale(4f);
-            font.draw(batch, "" + playerLScore, 40, screenHeight - 10);
-            font.draw(batch, "" + playerRScore, screenWidth - 60, screenHeight - 10);
-
-            batch.end();
-            paddleCollision();
-        }
+        currentState = currentState.doState(this);
     }
 
 
-    void update() {
-        switch (currentState) {
-            case INFO:
-                if (Gdx.input.justTouched()) {
-                    currentState = GameState.PLAY;
-                }
-                break;
-            case PLAY:
-                if (playerRScore >= 21 || playerLScore >= 21) {
-                    currentState = GameState.GAMEOVER;
-                }
-                break;
-            case GAMEOVER:
-                if (Gdx.input.justTouched()) {
-                    currentState = GameState.PLAY;
-                    this.ball.reset();
-                    paddleLeft.resetPosition();
-                    paddleRight.resetPosition();
-                    playerLScore = 0;
-                    playerRScore = 0;
-                }
-                break;
-            default:
-        }
+    public void reset() {
+        ball.reset();
+        paddleLeft.resetPosition();
+        paddleRight.resetPosition();
+        playerLScore = 0;
+        playerRScore = 0;
     }
 
     public static int randomInt() {
